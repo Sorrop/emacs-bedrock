@@ -105,8 +105,8 @@
 ;; Yasnippet for code snippets
 (use-package yasnippet
   :ensure t
-  :config
-  (yas-global-mode 1))
+  :hook
+  (rust-mode . yas-minor-mode))
 
 ;; Rust snippets collection
 (use-package yasnippet-snippets
