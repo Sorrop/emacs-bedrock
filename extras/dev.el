@@ -62,6 +62,9 @@
   :ensure t
   :bind (("C-x g" . magit-status)))
 
+;; Highlight changed lines by VC
+(global-diff-hl-mode)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;   Common file types
