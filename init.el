@@ -262,11 +262,7 @@ If the new path's directories does not exist, create them."
  '(custom-safe-themes
    '("d5fd482fcb0fe42e849caba275a01d4925e422963d1cd165565b31d3f4189c87"
      default))
- '(package-selected-packages
-   '(avy cape cider company corfu-terminal diff-hl eat embark-consult
-	 gruvbox-theme json-mode kind-icon lsp-ui magit marginalia
-	 orderless paredit pyvenv rainbow-delimiters tempel vertico
-	 wgrep yaml-mode)))
+ '(package-selected-packages nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -85,13 +85,33 @@
 ;; built in, you're almost certain to find a mode for the language you're
 ;; looking for with a quick Internet search.
 
+(use-package inheritenv
+  :ensure t)
 
+(use-package flycheck
+  :ensure t)
 
 ;; Company mode for completion
 (use-package company
   :ensure t
   :config
-  (global-company-mode 1))
+  (global-company-mode 1)
+  (setq company-minimum-prefix-length 1
+        company-idle-delay 0.0
+        company-tooltip-align-annotations t)
+  (add-to-list 'company-backends 'company-capf)
+  )
+
+;; Yasnippet for code snippets
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode 1))
+
+;; Rust snippets collection
+(use-package yasnippet-snippets
+  :ensure t
+  :after yasnippet)
 
 ;; LSP Mode
 (use-package lsp-mode
@@ -112,6 +132,12 @@
   :ensure t
   :custom
   (lsp-ui-doc-position 'at-point))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Clojure development
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Clojure mode
 (use-package clojure-mode
@@ -139,7 +165,12 @@
   :hook
   (clojure-mode . rainbow-delimiters-mode))
 
-;; Python development with pylsp
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Python development with pylsp
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package python
   :ensure nil  ; built-in
   :hook
@@ -175,6 +206,37 @@
 
 (add-hook 'python-mode-hook #'my/auto-activate-venv)
 (add-hook 'python-ts-mode-hook #'my/auto-activate-venv)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Rust Development
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;; Rustic mode (enhanced Rust mode)
+(use-package rustic
+  :ensure t
+  :custom
+  (rustic-format-on-save t)
+  (rustic-lsp-client 'lsp-mode)  ; Use lsp-mode instead of eglot
+  :config
+  ;; Disable rustic's own flycheck in favor of lsp-mode
+  (setq rustic-flycheck-setup-mode-line-p nil))
+
+;; Configure lsp-mode for Rust
+(with-eval-after-load 'lsp-mode
+  (setq lsp-rust-analyzer-cargo-watch-command "clippy"
+        lsp-rust-analyzer-server-display-inlay-hints t
+        lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
+        lsp-rust-analyzer-display-chaining-hints t
+        lsp-rust-analyzer-display-parameter-hints t
+	lsp-enable-snippet t
+        lsp-completion-enable-additional-text-edit t
+	lsp-rust-analyzer-completion-add-call-parenthesis t
+	lsp-rust-analyzer-completion-add-call-argument-snippets t))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
