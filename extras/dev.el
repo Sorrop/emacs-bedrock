@@ -82,6 +82,97 @@
 ;; built in, you're almost certain to find a mode for the language you're
 ;; looking for with a quick Internet search.
 
+
+
+;; Company mode for completion
+(use-package company
+  :ensure t
+  :config
+  (global-company-mode 1))
+
+;; LSP Mode
+(use-package lsp-mode
+  :ensure t
+  :custom
+  (lsp-idle-delay 0.5)
+  (lsp-headerline-breadcrumb-enable nil)
+  (lsp-enable-indentation nil)
+  :hook
+  ((clojure-mode . lsp-deferred)
+   (clojurescript-mode . lsp-deferred))
+  :bind (:map lsp-mode-map
+              ("C-c l r" . lsp-rename)
+              ("C-c l a" . lsp-execute-code-action)))
+
+;; LSP UI
+(use-package lsp-ui
+  :ensure t
+  :custom
+  (lsp-ui-doc-position 'at-point))
+
+;; Clojure mode
+(use-package clojure-mode
+  :ensure t
+  :config
+  (setq clojure-indent-style 'align-arguments))
+
+;; CIDER
+(use-package cider
+  :ensure t
+  :custom
+  (cider-repl-display-help-banner nil)
+  (cider-eldoc-display-for-symbol-at-point nil))
+
+;; Paredit for structural editing
+(use-package paredit
+  :ensure t
+  :hook
+  ((clojure-mode . paredit-mode)
+   (cider-repl-mode . paredit-mode)))
+
+;; Rainbow delimiters
+(use-package rainbow-delimiters
+  :ensure t
+  :hook
+  (clojure-mode . rainbow-delimiters-mode))
+
+;; Python development with pylsp
+(use-package python
+  :ensure nil  ; built-in
+  :hook
+  ((python-mode . eglot-ensure)
+   (python-ts-mode . eglot-ensure))
+  :custom
+  (python-indent-offset 4)
+  (python-shell-interpreter "python3"))
+
+;;;; Configure eglot to use pylsp for Python
+;;(with-eval-after-load 'eglot
+;;  (add-to-list 'eglot-server-programs
+;;               '((python-mode python-ts-mode) . ("pylsp"))))
+
+(use-package pyvenv
+  :ensure t
+  :config
+  (pyvenv-mode 1))
+
+;; Auto-activate venv and reconnect Eglot
+(defun my/auto-activate-venv ()
+  "Automatically activate venv if found in project and reconnect Eglot."
+  (let ((project-root (locate-dominating-file default-directory ".venv")))
+    (when project-root
+      (let ((venv-path (expand-file-name ".venv" project-root)))
+        (when (file-directory-p venv-path)
+          (pyvenv-activate venv-path)
+          ;; Reconnect Eglot if it's already running
+          (when (and (fboundp 'eglot-managed-p) (eglot-managed-p))
+            (when-let ((server (eglot-current-server)))
+              (message "Reconnecting Eglot...")
+              (eglot-reconnect server))))))))
+
+(add-hook 'python-mode-hook #'my/auto-activate-venv)
+(add-hook 'python-ts-mode-hook #'my/auto-activate-venv)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;   Eglot, the built-in LSP client for Emacs
@@ -96,18 +187,20 @@
   ;; no :ensure t here because it's built-in
 
   ;; Configure hooks to automatically turn-on eglot for selected modes
-  ; :hook
-  ; (((python-mode ruby-mode elixir-mode) . eglot-ensure))
+                                        ; :hook
+                                        ; (((python-mode ruby-mode elixir-mode) . eglot-ensure))
 
   :custom
   (eglot-send-changes-idle-time 0.1)
-  (eglot-extend-to-xref t)              ; activate Eglot in referenced non-project files
+  (eglot-extend-to-xref t)      ; activate Eglot in referenced non-project files
 
   :config
-  (fset #'jsonrpc--log-event #'ignore)  ; massive perf boost---don't log every event
+  (fset #'jsonrpc--log-event #'ignore) ; massive perf boost---don't log every event
   ;; Sometimes you need to tell Eglot where to find the language server
-  ; (add-to-list 'eglot-server-programs
-  ;              '(haskell-mode . ("haskell-language-server-wrapper" "--lsp")))
+  (add-to-list 'eglot-server-programs
+               ;;'(haskell-mode . ("haskell-language-server-wrapper" "--lsp"))
+               '((python-mode python-ts-mode) . ("pylsp"))
+               )
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

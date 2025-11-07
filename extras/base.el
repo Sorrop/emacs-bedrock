@@ -106,6 +106,9 @@
   :ensure nil
   :after vertico
   :bind (:map vertico-map
+	      ("<left>"  . vertico-directory-up)
+              ("<right>" . vertico-directory-enter)
+              ("RET"     . vertico-directory-enter)
               ("M-DEL" . vertico-directory-delete-word)))
 
 ;; Marginalia: annotations for minibuffer
