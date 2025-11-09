@@ -278,6 +278,49 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
+;;;   OCaml development
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Tuareg mode for OCaml
+(use-package tuareg
+  :ensure t
+  :mode ("\\.ml[iylp]?\\'" . tuareg-mode))
+
+;; Merlin for OCaml (required by lsp-mode)
+(use-package merlin
+  :ensure t
+  :hook (tuareg-mode . merlin-mode))
+
+;; OCaml LSP via lsp-mode
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-language-id-configuration '(tuareg-mode . "ocaml"))
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection "ocamllsp")
+    :major-modes '(tuareg-mode)
+    :server-id 'ocamllsp))
+  ;; OCaml-specific LSP settings
+  (setq lsp-ocaml-lsp-server-path "ocamllsp"))
+
+(add-hook 'tuareg-mode #'lsp-deferred)
+;; Enable yasnippet for OCaml
+(add-hook 'tuareg-mode-hook #'yas-minor-mode)
+
+;; Dune integration
+(use-package dune
+  :ensure t)
+
+
+;; utop for REPL
+(use-package utop
+  :ensure t
+  :hook (tuareg-mode . utop-minor-mode)
+  :bind (:map tuareg-mode-map
+              ("C-c C-s" . utop)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
 ;;;   Eglot, the built-in LSP client for Emacs
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
