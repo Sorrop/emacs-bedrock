@@ -63,7 +63,10 @@
   :bind (("C-x g" . magit-status)))
 
 ;; Highlight changed lines by VC
-(global-diff-hl-mode)
+(use-package diff-hl
+  :ensure t
+  :config
+  (global-diff-hl-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -105,8 +108,7 @@
 ;; Yasnippet for code snippets
 (use-package yasnippet
   :ensure t
-  :hook
-  (rust-mode . yas-minor-mode))
+  :hook ((rust-mode go-mode tuareg-mode) . yas-minor-mode))
 
 ;; Rust snippets collection
 (use-package yasnippet-snippets
@@ -122,10 +124,45 @@
   (lsp-enable-indentation nil)
   :hook
   ((clojure-mode . lsp-deferred)
-   (clojurescript-mode . lsp-deferred))
+   (clojurescript-mode . lsp-deferred)
+   (tuareg-mode . lsp-deferred)
+   (go-mode . lsp-deferred)
+   (go-ts-mode . lsp-deferred))
   :bind (:map lsp-mode-map
               ("C-c l r" . lsp-rename)
               ("C-c l a" . lsp-execute-code-action)))
+
+(with-eval-after-load 'lsp-mode
+  (setq lsp-enable-snippet t
+        lsp-completion-enable-additional-text-edit t
+
+        ;; Rust
+        lsp-rust-analyzer-cargo-watch-command "clippy"
+        lsp-rust-analyzer-server-display-inlay-hints t
+        lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
+        lsp-rust-analyzer-display-chaining-hints t
+        lsp-rust-analyzer-display-parameter-hints t
+	      lsp-rust-analyzer-completion-add-call-parenthesis t
+	      lsp-rust-analyzer-completion-add-call-argument-snippets t
+
+        ;; Go
+        lsp-go-analyses
+        '((unusedparams . t)
+          (shadow . t)
+          (nilness . t)
+          (unusedwrite . t)
+          (useany . t))
+        lsp-go-gopls-server-path "gopls"
+        lsp-go-use-gofumpt t)
+  ;; OCaml
+  (add-to-list 'lsp-language-id-configuration '(tuareg-mode . "ocaml"))
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection "ocamllsp")
+    :major-modes '(tuareg-mode)
+    :server-id 'ocamllsp))
+  ;; OCaml-specific LSP settings
+  (setq lsp-ocaml-lsp-server-path "ocamllsp"))
 
 ;; LSP UI
 (use-package lsp-ui
@@ -225,18 +262,6 @@
   ;; Disable rustic's own flycheck in favor of lsp-mode
   (setq rustic-flycheck-setup-mode-line-p nil))
 
-;; Configure lsp-mode for Rust
-(with-eval-after-load 'lsp-mode
-  (setq lsp-rust-analyzer-cargo-watch-command "clippy"
-        lsp-rust-analyzer-server-display-inlay-hints t
-        lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
-        lsp-rust-analyzer-display-chaining-hints t
-        lsp-rust-analyzer-display-parameter-hints t
-	lsp-enable-snippet t
-        lsp-completion-enable-additional-text-edit t
-	lsp-rust-analyzer-completion-add-call-parenthesis t
-	lsp-rust-analyzer-completion-add-call-argument-snippets t))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;   Go development (gopls via lsp-mode)
@@ -246,9 +271,7 @@
 (use-package go-mode
   :ensure t
   :hook
-  ((go-mode . lsp-deferred)
-   (go-ts-mode . lsp-deferred)
-   (before-save . gofmt-before-save))
+  ((before-save . gofmt-before-save))
   :config
   (setq gofmt-command "goimports"))
 
@@ -256,25 +279,6 @@
 (when (treesit-available-p)
   (unless (treesit-language-available-p 'go)
     (ignore-errors (treesit-install-language-grammar 'go))))
-
-;; Configure lsp-mode for Go
-(with-eval-after-load 'lsp-mode
-  (setq lsp-go-analyses
-        '((unusedparams . t)
-          (shadow . t)
-          (nilness . t)
-          (unusedwrite . t)
-          (useany . t)))
-  (setq lsp-go-gopls-server-path "gopls"
-        lsp-go-use-gofumpt t
-        lsp-enable-snippet t
-        lsp-completion-enable-additional-text-edit t))
-
-;; Optional: better Go snippets
-(use-package yasnippet
-  :ensure t
-  :hook (go-mode . yas-minor-mode))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -292,25 +296,9 @@
   :ensure t
   :hook (tuareg-mode . merlin-mode))
 
-;; OCaml LSP via lsp-mode
-(with-eval-after-load 'lsp-mode
-  (add-to-list 'lsp-language-id-configuration '(tuareg-mode . "ocaml"))
-  (lsp-register-client
-   (make-lsp-client
-    :new-connection (lsp-stdio-connection "ocamllsp")
-    :major-modes '(tuareg-mode)
-    :server-id 'ocamllsp))
-  ;; OCaml-specific LSP settings
-  (setq lsp-ocaml-lsp-server-path "ocamllsp"))
-
-(add-hook 'tuareg-mode #'lsp-deferred)
-;; Enable yasnippet for OCaml
-(add-hook 'tuareg-mode-hook #'yas-minor-mode)
-
 ;; Dune integration
 (use-package dune
   :ensure t)
-
 
 ;; utop for REPL
 (use-package utop
