@@ -237,6 +237,44 @@
 	lsp-rust-analyzer-completion-add-call-parenthesis t
 	lsp-rust-analyzer-completion-add-call-argument-snippets t))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Go development (gopls via lsp-mode)
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package go-mode
+  :ensure t
+  :hook
+  ((go-mode . lsp-deferred)
+   (go-ts-mode . lsp-deferred)
+   (before-save . gofmt-before-save))
+  :config
+  (setq gofmt-command "goimports"))
+
+;; If using Tree-sitter for Go (Emacs 29+)
+(when (treesit-available-p)
+  (unless (treesit-language-available-p 'go)
+    (ignore-errors (treesit-install-language-grammar 'go))))
+
+;; Configure lsp-mode for Go
+(with-eval-after-load 'lsp-mode
+  (setq lsp-go-analyses
+        '((unusedparams . t)
+          (shadow . t)
+          (nilness . t)
+          (unusedwrite . t)
+          (useany . t)))
+  (setq lsp-go-gopls-server-path "gopls"
+        lsp-go-use-gofumpt t
+        lsp-enable-snippet t
+        lsp-completion-enable-additional-text-edit t))
+
+;; Optional: better Go snippets
+(use-package yasnippet
+  :ensure t
+  :hook (go-mode . yas-minor-mode))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
