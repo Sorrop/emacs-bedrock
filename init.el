@@ -173,7 +173,7 @@ If the new path's directories does not exist, create them."
 (pixel-scroll-precision-mode)                         ; Smooth scrolling
 
 ;; Use common keystrokes by default
-(cua-mode)
+;;(cua-mode)
 
 ;; For terminal users, make the mouse more useful
 
@@ -212,7 +212,8 @@ If the new path's directories does not exist, create them."
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package emacs
+(use-package gruvbox-theme
+  :ensure t
   :config
   (load-theme 'gruvbox t))          ; for light theme, use modus-operandi
 
