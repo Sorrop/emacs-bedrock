@@ -152,7 +152,13 @@
   :ensure t
   :init
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-file))
+  ;;(add-to-list 'completion-at-point-functions #'cape-file)
+  )
+
+;; Add cape-file only in specific modes
+(add-hook 'prog-mode-hook 
+          (lambda ()
+            (add-to-list 'completion-at-point-functions #'cape-file)))
 
 ;; Pretty icons for corfu
 (use-package kind-icon
@@ -171,13 +177,13 @@
   :hook ((eshell-mode . bedrock/setup-eshell)))
 
 ;; Eat: Emulate A Terminal
-(use-package eat
-  :ensure t
-  :custom
-  (eat-term-name "xterm")
-  :config
-  (eat-eshell-mode)                     ; use Eat to handle term codes in program output
-  (eat-eshell-visual-command-mode))     ; commands like less will be handled by Eat
+;;(use-package eat
+;;  :ensure t
+;;  :custom
+;;  (eat-term-name "xterm")
+;;  :config
+;;  (eat-eshell-mode)                     ; use Eat to handle term codes in program output
+;;  (eat-eshell-visual-command-mode))     ; commands like less will be handled by Eat
 
 ;; Orderless: powerful completion style
 (use-package orderless
