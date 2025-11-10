@@ -50,7 +50,9 @@
 ;; If you want to turn off the welcome screen, uncomment this
 ;(setopt inhibit-splash-screen t)
 
-(set-frame-font "Source Code Pro 14")
+
+(set-face-attribute 'default nil :font "Source Code Pro" :height 140)
+
 
 (setopt initial-major-mode 'fundamental-mode)  ; default mode for the *scratch* buffer
 (setopt display-time-default-load-average nil) ; this information is useless for most
