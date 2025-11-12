@@ -48,8 +48,7 @@
    (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
 
 ;; If you want to turn off the welcome screen, uncomment this
-;(setopt inhibit-splash-screen t)
-
+(setopt inhibit-splash-screen t)
 
 (set-face-attribute 'default nil :font "Source Code Pro" :height 140)
 
@@ -192,6 +191,9 @@ If the new path's directories does not exist, create them."
 (let ((hl-line-hooks '(text-mode-hook prog-mode-hook)))
   (mapc (lambda (hook) (add-hook hook 'hl-line-mode)) hl-line-hooks))
 
+;; Accept y or n for confirmation instead of yes and no
+(fset 'yes-or-no-p 'y-or-n-p)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;   Tab-bar configuration
@@ -265,7 +267,12 @@ If the new path's directories does not exist, create them."
  '(custom-safe-themes
    '("d5fd482fcb0fe42e849caba275a01d4925e422963d1cd165565b31d3f4189c87"
      default))
- '(package-selected-packages nil))
+ '(package-selected-packages
+   '(avy cape cider company diff-hl dune embark-consult flycheck go-mode
+	 gruvbox-theme inheritenv json-mode kind-icon lsp-ui magit
+	 marginalia merlin orderless paredit pyenv-mode pyvenv
+	 pyvenv-auto rainbow-delimiters rustic tempel utop vertico
+	 wgrep yaml-mode yasnippet-snippets)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
