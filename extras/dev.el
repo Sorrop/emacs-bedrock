@@ -41,7 +41,8 @@
           (typescript-mode . typescript-ts-mode)
           (json-mode . json-ts-mode)
           (css-mode . css-ts-mode)
-          (python-mode . python-ts-mode)))
+          (python-mode . python-ts-mode)
+	  (c-mode . c-ts-mode)))
   :hook
   ;; Auto parenthesis matching
   ((prog-mode . electric-pair-mode)))
@@ -153,7 +154,12 @@
           (unusedwrite . t)
           (useany . t))
         lsp-go-gopls-server-path "gopls"
-        lsp-go-use-gofumpt t)
+        lsp-go-use-gofumpt t
+
+	;; Terraform
+	lsp-terraform-ls-enable-show-reference t
+        lsp-terraform-ls-enable-completion t
+        lsp-terraform-ls-enable-hover t)
   ;; OCaml
   (add-to-list 'lsp-language-id-configuration '(tuareg-mode . "ocaml"))
   (lsp-register-client
@@ -222,6 +228,13 @@
 ;;  (add-to-list 'eglot-server-programs
 ;;               '((python-mode python-ts-mode) . ("pylsp"))))
 
+(use-package flymake-ruff
+  :ensure t
+  :hook
+  ((python-mode . flymake-ruff-load)
+   (python-ts-mode . flymake-ruff-load)))
+
+
 (use-package pyvenv
   :ensure t
   :config
@@ -282,6 +295,25 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
+;;;   C development
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package cc-mode
+  :ensure nil
+  :hook
+  ((c-mode . eglot-ensure)
+   (c-ts-mode . eglot-ensure))
+  :custom
+  (c-basic-offset 4)
+  (c-default-style "linux"))
+
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '((c-mode c-ts-mode) . ("clangd"))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
 ;;;   OCaml development
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -309,6 +341,22 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
+;;;   Terraform development
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Major mode for .tf files
+(use-package terraform-mode
+  :ensure t
+  :mode ("\\.tf\\'" . terraform-mode)
+  :hook
+  ;; Run `terraform fmt` automatically
+  ((terraform-mode . terraform-format-on-save-mode)
+   ;; Enable LSP for Terraform
+   (terraform-mode . lsp-deferred)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
 ;;;   Eglot, the built-in LSP client for Emacs
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -331,11 +379,17 @@
   :config
   (fset #'jsonrpc--log-event #'ignore) ; massive perf boost---don't log every event
   ;; Sometimes you need to tell Eglot where to find the language server
-  (add-to-list 'eglot-server-programs
-               ;;'(haskell-mode . ("haskell-language-server-wrapper" "--lsp"))
-               '((python-mode python-ts-mode) . ("pylsp"))
-               )
+  ;;(add-to-list 'eglot-server-programs
+  ;;             ;;'(haskell-mode . ("haskell-language-server-wrapper" "--lsp"))
+  ;;             '((python-mode python-ts-mode) . ("ruff-lsp"))
+  ;;             )
+  ;;
   )
+
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '((python-mode python-ts-mode)
+                 . ("pyright-langserver" "--stdio"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;

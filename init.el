@@ -227,6 +227,13 @@ If the new path's directories does not exist, create them."
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; ENV var handling
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize))
+
+
 ;; Uncomment the (load-file …) lines or copy code from the extras/ elisp files
 ;; as desired
 
@@ -268,10 +275,11 @@ If the new path's directories does not exist, create them."
    '("d5fd482fcb0fe42e849caba275a01d4925e422963d1cd165565b31d3f4189c87"
      default))
  '(package-selected-packages
-   '(avy cape cider company diff-hl dune embark-consult flycheck go-mode
+   '(avy cape cider company diff-hl dune embark-consult
+	 exec-path-from-shell flycheck flymake-ruff go-mode
 	 gruvbox-theme inheritenv json-mode kind-icon lsp-ui magit
-	 marginalia merlin orderless paredit pyenv-mode pyvenv
-	 pyvenv-auto rainbow-delimiters rustic tempel utop vertico
+	 marginalia merlin orderless paredit pyenv-mode pyvenv-auto
+	 rainbow-delimiters rustic tempel terraform-mode utop vertico
 	 wgrep yaml-mode yasnippet-snippets)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
