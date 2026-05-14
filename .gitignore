@@ -7,3 +7,6 @@
 /projects
 /transient/
 /tree-sitter/
+/ielm-history.eld
+/emacs-backup/*
+/.lsp-session-v1
