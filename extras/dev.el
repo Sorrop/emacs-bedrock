@@ -39,6 +39,7 @@
           (bash-mode . bash-ts-mode)
           (js2-mode . js-ts-mode)
           (typescript-mode . typescript-ts-mode)
+	  (tsx-mode . tsx-ts-mode)
           (json-mode . json-ts-mode)
           (css-mode . css-ts-mode)
           (python-mode . python-ts-mode)
@@ -338,6 +339,23 @@
   :hook (tuareg-mode . utop-minor-mode)
   :bind (:map tuareg-mode-map
               ("C-c C-s" . utop)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   TypeScript development
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package typescript-mode
+  :ensure t
+  :mode ("\\.ts\\'" "\\.tsx\\'"))
+
+;; ts-ls via lsp-mode (consistent with your Clojure/Go/Rust setup)
+(with-eval-after-load 'lsp-mode
+  (add-hook 'typescript-mode-hook #'lsp-deferred)
+  (add-hook 'typescript-ts-mode-hook #'lsp-deferred)
+  (add-hook 'js-mode-hook #'lsp-deferred)
+  (add-hook 'js-ts-mode-hook #'lsp-deferred))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
