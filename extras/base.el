@@ -202,3 +202,18 @@
   :ensure t
   :config
   (setq wgrep-auto-save-buffer t))
+
+
+;; Markdown
+
+(use-package markdown-mode
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (setq markdown-command "pandoc")
+  :bind (:map markdown-mode-map
+         ("C-c C-e" . markdown-do)))
+
+
+(use-package xclip
+  :config
+  (xclip-mode 1))

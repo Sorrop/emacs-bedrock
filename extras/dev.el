@@ -42,7 +42,7 @@
 	  (tsx-mode . tsx-ts-mode)
           (json-mode . json-ts-mode)
           (css-mode . css-ts-mode)
-          (python-mode . python-ts-mode)
+          ;(python-mode . python-ts-mode)
 	  (c-mode . c-ts-mode)))
   :hook
   ;; Auto parenthesis matching
@@ -216,7 +216,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package python
-  :ensure nil  ; built-in
+  :ensure t  ; built-in
   :hook
   ((python-mode . eglot-ensure)
    (python-ts-mode . eglot-ensure))
@@ -372,6 +372,40 @@
   ((terraform-mode . terraform-format-on-save-mode)
    ;; Enable LSP for Terraform
    (terraform-mode . lsp-deferred)))
+
+;;; Emulate A Terminal
+
+(use-package eat
+  :ensure t)
+
+(with-eval-after-load 'eat
+  (define-key eat-semi-char-mode-map (kbd "C-S-v")
+    (lambda ()
+      (interactive)
+      (process-send-string (get-buffer-process (current-buffer))
+                           (gui-get-selection 'CLIPBOARD)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   LLM Assistance
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package claudemacs
+  :vc (:url "https://github.com/cpoile/claudemacs")
+  :after eat
+  :config
+  (define-key prog-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
+  (define-key text-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
+  (define-key markdown-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
+  (define-key clojure-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
+  (with-eval-after-load 'eat
+    (setq eat-term-scrollback-size 400000))
+  (global-auto-revert-mode t))
+
+
+(use-package dockerfile-mode
+  :ensure t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
