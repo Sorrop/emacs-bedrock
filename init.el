@@ -276,12 +276,12 @@ If the new path's directories does not exist, create them."
    '("d5fd482fcb0fe42e849caba275a01d4925e422963d1cd165565b31d3f4189c87"
      default))
  '(package-selected-packages
-   '(avy cape cider claudemacs company diff-hl dockerfile-mode dune eat
-	 embark-consult exec-path-from-shell flycheck flymake-ruff
+   '(avy cape cider claudemacs company diff-hl dockerfile-mode dune
+	 embark-consult exec-path-from-shell flycheck flymake-ruff ghostel
 	 go-mode gruvbox-theme inheritenv json-mode kind-icon lsp-ui
-	 magit marginalia merlin orderless paredit pyenv-mode
-	 pyvenv-auto rainbow-delimiters rustic tempel terraform-mode
-	 typescript-mode utop vertico wgrep xclip yaml-mode
+	 magit marginalia merlin orderless paredit pyvenv
+	 rainbow-delimiters rustic tempel terraform-mode tuareg
+	 typescript-mode utop vertico wgrep which-key xclip yaml-mode
 	 yasnippet-snippets))
  '(package-vc-selected-packages '((claudemacs :url "https://github.com/cpoile/claudemacs"))))
 (custom-set-faces

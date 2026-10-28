@@ -375,15 +375,21 @@
 
 ;;; Emulate A Terminal
 
-(use-package eat
-  :ensure t)
+(use-package ghostel
+  :ensure t
+  :custom
+  (ghostel-module-auto-install 'download)
+  :bind (:map ghostel-semi-char-mode-map
+         ("C-S-v" . (lambda ()
+                      (interactive)
+                      (ghostel-paste-string (gui-get-selection 'CLIPBOARD))))))
 
-(with-eval-after-load 'eat
-  (define-key eat-semi-char-mode-map (kbd "C-S-v")
-    (lambda ()
-      (interactive)
-      (process-send-string (get-buffer-process (current-buffer))
-                           (gui-get-selection 'CLIPBOARD)))))
+(use-package ghostel-project
+  :bind (:map project-prefix-map
+         ("m" . ghostel-project)))
+
+(use-package ghostel-eshell
+  :hook (eshell-load . ghostel-eshell-visual-command-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -393,14 +399,15 @@
 
 (use-package claudemacs
   :vc (:url "https://github.com/cpoile/claudemacs")
-  :after eat
+  :after ghostel
+  :custom
+  (claudemacs-terminal-backend 'ghostel)
   :config
   (define-key prog-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
   (define-key text-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
   (define-key markdown-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
   (define-key clojure-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
-  (with-eval-after-load 'eat
-    (setq eat-term-scrollback-size 400000))
+  (load-file (expand-file-name "extras/claudemacs-jsonl.el" user-emacs-directory))
   (global-auto-revert-mode t))
 
 

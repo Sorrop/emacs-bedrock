@@ -10,3 +10,5 @@
 /ielm-history.eld
 /emacs-backup/*
 /.lsp-session-v1
+/session.*
+/workspace/

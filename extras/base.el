@@ -217,3 +217,6 @@
 (use-package xclip
   :config
   (xclip-mode 1))
+
+(setq auto-save-visited-interval 2)
+(auto-save-visited-mode 1)
